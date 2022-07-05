@@ -1,0 +1,8 @@
+{
+  "name": "spidermint",
+  "description": "a bot for minting sniper-nft collections on joepegs",
+  "version": "1.0.0",
+  "main": "dist/spider.ts",
+  "author": "analogdev.eth <dejijolaoluwa@gmail.com>",
+  "license": "MIT"
+}

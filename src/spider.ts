@@ -2,6 +2,7 @@ import { ethers, Contract, Wallet, BigNumber } from "ethers";
 import * as dotenv from "dotenv";
 dotenv.config();
 import LaunchpegABI from "./abis/Launchpeg.json";
+// import ERC721ABI from "./abis/ERC721.json";
 
 const privateKeyIsValid = (privateKey: string | undefined): boolean => {
   if (privateKey === undefined) return false;
@@ -39,24 +40,42 @@ const MintContract: Contract = new ethers.Contract(
   wallet
 );
 
-const mint = async (): Promise<void> => {
+const getName = async (erc721Contract: Contract) => {
+  const name = await erc721Contract.name();
+  console.log({ "contract-name": name });
+};
+// getName(MintContract);
+
+const getSymbol = async (erc721Contract: Contract) => {
+  const symbol = await erc721Contract.symbol();
+  console.log({ "contract-symbol": symbol });
+};
+// getSymbol(MintContract);
+
+const mint = async (launchpegContract: Contract): Promise<void> => {
   const mintQuantity: number = process.argv[3] ? parseInt(process.argv[3]) : 1;
   try {
-    const mintTx = await MintContract.publicSaleMint(mintQuantity);
+    const mintTx = await launchpegContract.publicSaleMint(mintQuantity, {
+      gasLimit: 300000,
+    });
     await mintTx.wait();
     console.log(mintTx.hash);
   } catch (err) {
     console.error(err);
   }
 };
-mint();
+setInterval(() => {
+  try {
+    mint(MintContract);
+  } catch (err) {console.log(" tx failed ")}
+}, 1000);
 
-// const getTotalSupply = async (): Promise<void> => {
-//   try {
-//     const totalSupply: BigNumber = await MintContract.totalSupply();
-//     console.log({ totalSupply: totalSupply.toString() });
-//   } catch (err) {
-//     console.error(err);
-//   }
-// }
+const getTotalSupply = async (): Promise<void> => {
+  try {
+    const totalSupply: BigNumber = await MintContract.totalSupply();
+    console.log({ totalSupply: totalSupply.toString() });
+  } catch (err) {
+    console.error(err);
+  }
+};
 // getTotalSupply();
